@@ -58,6 +58,7 @@ All generated button HTML uses `<table>` wrappers and fully inline CSS. This is 
 ## UI features
 
 - **Custom calendar date picker** — clicking the date field opens a month-grid popup with prev/next navigation. Today is highlighted; past dates are dimmed. Clicking outside closes it.
+- **Preview** — shows the calendar buttons only, with no surrounding label text
 - **Calendar toggles** — checkboxes to include/exclude any of the five providers
 - **Button style** — Outline (white background + colored border per provider), hardcoded
 - **Light mode UI** — white/light-gray theme with blue (`#3b6ff5`) accent
