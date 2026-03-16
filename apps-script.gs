@@ -13,7 +13,7 @@
 //   6. Paste the Web App URL into calendar-link-generator.html (APPS_SCRIPT_URL).
 // ──────────────────────────────────────────────────────────────────────────
 
-const FOLDER_ID = 'PASTE_YOUR_DRIVE_FOLDER_ID_HERE';
+const FOLDER_ID = '1jANRTAZw9ftMbOmfKs9b3DpkARgX2JDH';
 
 function doPost(e) {
   try {
