@@ -770,6 +770,7 @@ ${btns.join('\n')}
         <span style="font-family:'DM Mono',monospace; font-size:9.5px; color:#7b829a; text-transform:uppercase; letter-spacing:0.1em;">Apple / iCal</span>
         <button id="uploadBtn" class="dl-btn" onclick="uploadICS()">☁ Upload .ics to Drive</button>
         <span id="upload-status" style="font-family:'DM Mono',monospace; font-size:11px;"></span>
+        <span style="font-family:'DM Mono',monospace; font-size:10px; color:#9ea5bc;">iOS/Safari: "Add to Calendar" prompt &nbsp;·&nbsp; Chrome on Mac: opens as download — double-click to add</span>
       </div>` : '';
 
     lastIcsContent = icsContent;
@@ -817,11 +818,12 @@ ${btns.join('\n')}
       const json = await res.json();
       if (json.ok) {
         document.getElementById('icsUrl').value = json.url;
-        status.textContent = '✓ Uploaded';
-        status.style.color = 'var(--success)';
-        btn.textContent    = '☁ Upload to Drive';
-        btn.disabled       = false;
+        btn.textContent = '☁ Upload to Drive';
+        btn.disabled    = false;
         generate(); // rebuild output with the hosted URL now in the Apple button
+        // Set status after generate() so the DOM rebuild doesn't wipe it
+        document.getElementById('upload-status').textContent = '✓ Uploaded';
+        document.getElementById('upload-status').style.color = 'var(--success)';
       } else {
         throw new Error(json.error || 'Upload failed');
       }
