@@ -1,6 +1,7 @@
-// ── Add-to-Calendar .ics Uploader ──────────────────────────────────────────
-// Receives .ics content from the HTML tool, saves it to a Drive folder,
-// makes it publicly accessible, and returns the download URL.
+// ── Add-to-Calendar .ics Uploader + Server ────────────────────────────────
+// doPost: receives .ics content from the HTML tool, saves it to Drive.
+// doGet:  serves the .ics file with text/calendar MIME type so iOS/macOS
+//         shows "Add to Calendar" natively instead of triggering a download.
 //
 // SETUP (one-time):
 //   1. Create a folder in Google Drive.
@@ -11,15 +12,38 @@
 //      Execute as: Me  |  Who has access: Anyone
 //   5. Click Deploy → authorize when prompted → copy the Web App URL.
 //   6. Paste the Web App URL into calendar-link-generator.html (APPS_SCRIPT_URL).
+//
+// TO UPDATE (after editing this script):
+//   Deploy → Manage Deployments → pencil icon → Version: New version → Deploy
+//   (keeps the same URL — do NOT create a new deployment)
 // ──────────────────────────────────────────────────────────────────────────
 
 const FOLDER_ID = '1jANRTAZw9ftMbOmfKs9b3DpkARgX2JDH';
 
+// Serve a stored .ics file with text/calendar MIME type
+// URL: <web-app-url>?file=<filename-without-extension>
+function doGet(e) {
+  try {
+    const filename = (e.parameter.file || '') + '.ics';
+    const folder   = DriveApp.getFolderById(FOLDER_ID);
+    const files    = folder.getFilesByName(filename);
+    if (!files.hasNext()) {
+      return ContentService.createTextOutput('File not found').setMimeType(ContentService.MimeType.TEXT);
+    }
+    const content = files.next().getBlob().getDataAsString();
+    return ContentService.createTextOutput(content).setMimeType(ContentService.MimeType.ICAL);
+  } catch (err) {
+    return ContentService.createTextOutput('Error: ' + err.message).setMimeType(ContentService.MimeType.TEXT);
+  }
+}
+
+// Receive .ics content from the HTML tool and save it to Drive
 function doPost(e) {
   try {
     const data     = JSON.parse(e.postData.contents);
     const filename = data.filename;
     const content  = data.content;
+    const safeName = filename.replace(/\.ics$/i, '');
 
     const folder = DriveApp.getFolderById(FOLDER_ID);
 
@@ -27,11 +51,11 @@ function doPost(e) {
     const existing = folder.getFilesByName(filename);
     while (existing.hasNext()) existing.next().setTrashed(true);
 
-    // Create the file and make it accessible to anyone with the link
-    const file = folder.createFile(filename, content, 'text/calendar');
-    file.setSharing(DriveApp.Access.ANYONE_WITH_LINK, DriveApp.Permission.VIEW);
+    // Save to Drive (no need to make public — served via doGet)
+    folder.createFile(filename, content, 'text/calendar');
 
-    const url = 'https://drive.google.com/uc?export=download&id=' + file.getId();
+    // Return a doGet URL that serves the file with proper MIME type
+    const url = ScriptApp.getService().getUrl() + '?file=' + encodeURIComponent(safeName);
 
     return ContentService
       .createTextOutput(JSON.stringify({ ok: true, url }))
