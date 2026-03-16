@@ -269,33 +269,6 @@
     .cal-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
     .check-item span { font-size: 13px; color: var(--text); }
 
-    /* ── Tabs ── */
-    .tabs {
-      display: flex;
-      gap: 3px;
-      background: var(--surface2);
-      border: 1px solid var(--border);
-      border-radius: 7px;
-      padding: 3px;
-      margin-bottom: 14px;
-    }
-
-    .tab {
-      flex: 1;
-      padding: 5px 6px;
-      text-align: center;
-      font-size: 11.5px;
-      font-family: 'DM Mono', monospace;
-      border-radius: 5px;
-      cursor: pointer;
-      color: var(--text-muted);
-      border: none;
-      background: none;
-      transition: all 0.15s;
-    }
-
-    .tab.active { background: var(--accent); color: white; }
-
     /* ── Generate btn ── */
     .generate-btn {
       width: 100%;
@@ -532,12 +505,6 @@
     <hr class="divider" />
     <div class="section-label">Button Style</div>
 
-    <div class="tabs">
-      <button class="tab active" data-style="colored" onclick="setStyle(this)">Colored</button>
-      <button class="tab" data-style="dark" onclick="setStyle(this)">Dark</button>
-      <button class="tab" data-style="outline" onclick="setStyle(this)">Outline</button>
-    </div>
-
     <button class="generate-btn" onclick="generate()">⚡ Generate Embed Code</button>
   </div>
 
@@ -667,13 +634,6 @@
   }
 
   // ── Palettes ──
-  let currentStyle = 'colored';
-  function setStyle(el) {
-    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-    el.classList.add('active');
-    currentStyle = el.dataset.style;
-  }
-
   const PALETTES = {
     colored: {
       google:    {bg:'#EA4335',color:'#fff',border:'none'},
@@ -737,7 +697,7 @@ ${btns.join('\n')}
     const loc    = document.getElementById('location').value.trim();
     const desc   = document.getElementById('description').value.trim();
     const icsUrl = document.getElementById('icsUrl').value.trim();
-    const style  = currentStyle;
+    const style  = 'outline';
     const enabled = getEnabled();
 
     if (!title) { alert('Please enter an event title.'); return; }
@@ -752,7 +712,7 @@ ${btns.join('\n')}
 
     const icsContent = buildICS(title,date,start,end,loc,desc,tz);
     const icsDataUri = 'data:text/calendar;charset=utf8,' + encodeURIComponent(icsContent);
-    const safeTitle  = title.replace(/\s+/g,'-').replace(/[^a-zA-Z0-9-]/g,'');
+    const safeTitle  = title.replace(/[/\\:*?"<>|]/g,'').trim().replace(/\s+/g,'-');
     const emailHTML  = buildEmailHTML(links,style,enabled);
     const palette    = PALETTES[style];
 
@@ -770,7 +730,7 @@ ${btns.join('\n')}
         <span style="font-family:'DM Mono',monospace; font-size:9.5px; color:#7b829a; text-transform:uppercase; letter-spacing:0.1em;">Apple / iCal</span>
         <button id="uploadBtn" class="dl-btn" onclick="uploadICS()">☁ Upload .ics to Drive</button>
         <span id="upload-status" style="font-family:'DM Mono',monospace; font-size:11px;"></span>
-        <span style="font-family:'DM Mono',monospace; font-size:10px; color:#9ea5bc;">iOS/Safari: "Add to Calendar" prompt &nbsp;·&nbsp; Chrome on Mac: opens as download — double-click to add</span>
+
       </div>` : '';
 
     lastIcsContent = icsContent;
