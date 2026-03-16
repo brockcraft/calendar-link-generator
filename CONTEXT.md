@@ -59,6 +59,7 @@ All generated button HTML uses `<table>` wrappers and fully inline CSS. This is 
 
 - **Custom calendar date picker** — clicking the date field opens a month-grid popup with prev/next navigation. Today is highlighted; past dates are dimmed. Clicking outside closes it.
 - **Preview** — shows the calendar buttons only, with no surrounding label text
+- **Step 1 / Step 2 cards** — "Publish to GitHub" and "Copy Embed Code" buttons are the same size; each card's section label appears above its button
 - **Calendar toggles** — checkboxes to include/exclude any of the five providers
 - **Button style** — Outline (white background + colored border per provider), hardcoded
 - **Light mode UI** — white/light-gray theme with blue (`#3b6ff5`) accent
