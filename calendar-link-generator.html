@@ -496,10 +496,7 @@
       <textarea id="description" placeholder="Agenda, instructions, or details…"></textarea>
     </div>
 
-    <div class="field">
-      <label>Apple .ics Hosted URL <span style="color:#b45309;margin-left:2px;" title="Required for Apple Calendar button">◆</span></label>
-      <input type="url" id="icsUrl" placeholder="https://yoursite.com/event.ics" />
-    </div>
+    <input type="hidden" id="icsUrl" />
 
     <hr class="divider" />
     <div class="section-label">Calendars to Include</div>
@@ -768,29 +765,11 @@ ${btns.join('\n')}
       return `<a href="${href}" ${tgt} ${dl} class="prev-btn" style="background:${p.bg}; color:${p.color}; border:${p.border};">${LABELS[key]}</a>`;
     }).join('');
 
-    const appleNote = enabled.includes('apple') ? `
-      <div class="note">
-        <strong>Apple / iCal:</strong> Email clients block <code>data:</code> URIs, so the Apple button needs a hosted <code>.ics</code> URL.
-        Download the .ics file below → upload to your website, Dropbox (public link), or Google Drive (share → Anyone with link) →
-        paste the URL into the <strong>Apple .ics Hosted URL</strong> field and regenerate.
-      </div>` : '';
-
-    const icsSection = enabled.includes('apple') ? `
-      <div class="card">
-        <div class="card-header">
-          <span class="card-label">Apple / iCal — .ics File</span>
-          <div style="display:flex;gap:8px;align-items:center;">
-            <span id="upload-status" style="font-family:'DM Mono',monospace;font-size:11px;"></span>
-            <button id="uploadBtn" class="dl-btn" onclick="uploadICS()">☁ Upload to Drive</button>
-            <a href="${icsDataUri}" download="${safeTitle}.ics" class="dl-btn">⬇ Download ${safeTitle}.ics</a>
-          </div>
-        </div>
-        <p style="font-size:12px; color:var(--text-muted); margin-bottom:12px;">Host this file publicly, then paste the URL into the field above.</p>
-        <div class="card-header" style="margin-bottom:8px;">
-          <span class="card-label">ICS Content</span>
-          <button class="copy-btn" onclick="cp(this,'ics-raw')">Copy</button>
-        </div>
-        <pre id="ics-raw">${esc(icsContent)}</pre>
+    const appleUpload = enabled.includes('apple') ? `
+      <div style="margin-top:12px; padding-top:12px; border-top:1px solid #e2e5ea; display:flex; align-items:center; gap:10px; flex-wrap:wrap;">
+        <span style="font-family:'DM Mono',monospace; font-size:9.5px; color:#7b829a; text-transform:uppercase; letter-spacing:0.1em;">Apple / iCal</span>
+        <button id="uploadBtn" class="dl-btn" onclick="uploadICS()">☁ Upload .ics to Drive</button>
+        <span id="upload-status" style="font-family:'DM Mono',monospace; font-size:11px;"></span>
       </div>` : '';
 
     lastIcsContent = icsContent;
@@ -801,11 +780,7 @@ ${btns.join('\n')}
         <div class="card-header"><span class="card-label">Button Preview</span></div>
         <p style="font-family:Arial,sans-serif; font-size:13px; color:#888; margin-bottom:10px;">Add to your calendar:</p>
         <div class="preview-buttons">${previewBtns}</div>
-        ${appleNote}
-        <div class="hint" style="margin-top:12px;">
-          The <strong>Apple</strong> preview button downloads the .ics locally so you can test it.
-          In the actual email, replace with your hosted URL.
-        </div>
+        ${appleUpload}
       </div>
       <div class="card">
         <div class="card-header">
@@ -817,8 +792,7 @@ ${btns.join('\n')}
           In Mailchimp, drag in a <strong>Code</strong> content block (the &lt;/&gt; icon) and paste this HTML directly.
           The <code>&lt;table&gt;</code> wrapper keeps it compatible across email clients.
         </div>
-      </div>
-      ${icsSection}`;
+      </div>`;
   }
 
   async function uploadICS() {
