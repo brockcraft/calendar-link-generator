@@ -736,14 +736,14 @@ ${btns.join('\n')}
 
     document.getElementById('output').innerHTML = `
       <div class="card">
-        <div class="card-header"><span class="card-label">Button Preview</span></div>
+        <div class="card-header"><span class="card-label">Step 1: Apple / iCal</span></div>
         <p style="font-family:Arial,sans-serif; font-size:13px; color:#888; margin-bottom:10px;">Add to your calendar:</p>
         <div class="preview-buttons">${previewBtns}</div>
         ${appleUpload}
       </div>
       <div class="card">
         <div class="card-header">
-          <span class="card-label">HTML Embed Code — paste into Mailchimp "Code" block</span>
+          <span class="card-label">Step 2: HTML Embed Code — paste into Mailchimp "Code" block</span>
           <button class="copy-btn" onclick="cp(this,'embed-code')">Copy</button>
         </div>
         <pre id="embed-code">${esc(emailHTML)}</pre>
