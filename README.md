@@ -14,6 +14,8 @@ A single-file HTML tool that generates "Add to Calendar" button embed code for M
 
 Generates calendar links for Google, Outlook.com, Office 365, Yahoo, and Apple Calendar. The output is a `<table>`-based HTML block with inline styles — paste it into a Mailchimp **Code** (`</>`) content block.
 
+Form values are automatically saved to `localStorage` and restored on reload. A **Clear This Form** button resets everything back to defaults.
+
 Apple Calendar requires a hosted `.ics` file (email clients strip `data:` URIs). Clicking **Publish to GitHub** sends the `.ics` to the Apps Script backend, which commits it here and returns the GitHub Pages URL — a real `.ics` link that triggers iOS "Add to Calendar" and macOS Calendar on double-click.
 
 ## Setup (Apps Script backend)

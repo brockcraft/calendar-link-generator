@@ -291,6 +291,23 @@
     .generate-btn:hover { opacity: 0.92; box-shadow: 0 4px 14px rgba(59,111,245,0.3); }
     .generate-btn:active { transform: scale(0.99); }
 
+    .clear-btn {
+      width: 100%;
+      padding: 9px;
+      background: #fff0f0;
+      color: #c0392b;
+      border: 1px solid #f5c6c6;
+      border-radius: 8px;
+      font-size: 13px;
+      font-weight: 500;
+      cursor: pointer;
+      margin-top: 8px;
+      transition: background 0.15s, border-color 0.15s;
+      font-family: 'DM Sans', sans-serif;
+    }
+
+    .clear-btn:hover { background: #ffe0e0; border-color: #e8a0a0; }
+
     /* ── Output panel ── */
     .output-panel { padding: 24px; overflow-y: auto; background: var(--bg); }
 
@@ -504,6 +521,7 @@
     </div>
 
     <button class="generate-btn" onclick="generate()">⚡ Generate Embed Code</button>
+    <button class="clear-btn" onclick="clearForm()">Clear This Form</button>
   </div>
 
   <!-- OUTPUT -->
@@ -568,6 +586,7 @@
     lbl.classList.remove('placeholder');
     closeCal();
     renderCal();
+    saveForm();
   }
 
   function toggleCal(ev) {
@@ -800,6 +819,94 @@ ${btns.join('\n')}
       setTimeout(() => { btn.textContent = 'Copy Embed Code'; btn.classList.remove('ok'); }, 2500);
     });
   }
+
+  // ── localStorage persistence ──
+  const STORAGE_KEY = 'calgen_form';
+
+  function saveForm() {
+    const data = {
+      title:     document.getElementById('title').value,
+      date:      document.getElementById('date').value,
+      dateLabel: document.getElementById('dateTriggerLabel').textContent,
+      startTime: document.getElementById('startTime').value,
+      endTime:   document.getElementById('endTime').value,
+      timezone:  document.getElementById('timezone').value,
+      location:  document.getElementById('location').value,
+      description: document.getElementById('description').value,
+      icsUrl:    document.getElementById('icsUrl').value,
+      calYear, calMonth,
+      selDateMs: selDate ? selDate.getTime() : null,
+      calendars: Array.from(document.querySelectorAll('#calChecks input[type=checkbox]'))
+                   .map(cb => ({ value: cb.value, checked: cb.checked })),
+    };
+    try { localStorage.setItem(STORAGE_KEY, JSON.stringify(data)); } catch(e) {}
+  }
+
+  function restoreForm() {
+    let data;
+    try { data = JSON.parse(localStorage.getItem(STORAGE_KEY)); } catch(e) {}
+    if (!data) return;
+
+    if (data.title)       document.getElementById('title').value       = data.title;
+    if (data.startTime)   document.getElementById('startTime').value   = data.startTime;
+    if (data.endTime)     document.getElementById('endTime').value     = data.endTime;
+    if (data.timezone)    document.getElementById('timezone').value    = data.timezone;
+    if (data.location)    document.getElementById('location').value    = data.location;
+    if (data.description) document.getElementById('description').value = data.description;
+    if (data.icsUrl)      document.getElementById('icsUrl').value      = data.icsUrl;
+
+    if (data.date) {
+      document.getElementById('date').value = data.date;
+      const lbl = document.getElementById('dateTriggerLabel');
+      lbl.textContent = data.dateLabel || data.date;
+      lbl.classList.remove('placeholder');
+      if (data.selDateMs) selDate = new Date(data.selDateMs);
+      if (data.calYear  != null) calYear  = data.calYear;
+      if (data.calMonth != null) calMonth = data.calMonth;
+    }
+
+    if (data.calendars) {
+      data.calendars.forEach(({ value, checked }) => {
+        const cb = document.querySelector(`#calChecks input[value="${value}"]`);
+        if (cb) cb.checked = checked;
+      });
+    }
+  }
+
+  // Attach save listeners
+  ['title','startTime','endTime','timezone','location','description'].forEach(id => {
+    document.getElementById(id).addEventListener('input', saveForm);
+  });
+  document.querySelectorAll('#calChecks input[type=checkbox]').forEach(cb => {
+    cb.addEventListener('change', saveForm);
+  });
+
+  function clearForm() {
+    try { localStorage.removeItem(STORAGE_KEY); } catch(e) {}
+    document.getElementById('title').value       = '';
+    document.getElementById('date').value        = '';
+    document.getElementById('startTime').value   = '09:00';
+    document.getElementById('endTime').value     = '10:00';
+    document.getElementById('timezone').value    = 'America/Los_Angeles';
+    document.getElementById('location').value    = '';
+    document.getElementById('description').value = '';
+    document.getElementById('icsUrl').value      = '';
+    const lbl = document.getElementById('dateTriggerLabel');
+    lbl.textContent = 'Select a date…';
+    lbl.classList.add('placeholder');
+    selDate = null;
+    calYear  = _today.getFullYear();
+    calMonth = _today.getMonth();
+    document.querySelectorAll('#calChecks input[type=checkbox]').forEach(cb => cb.checked = true);
+    document.getElementById('output').innerHTML = `
+      <div class="empty-state">
+        <div class="icon">🗓</div>
+        <p>Fill in event details and click Generate</p>
+      </div>`;
+  }
+
+  // Restore on load
+  restoreForm();
 </script>
 </body>
 </html>

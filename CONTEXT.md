@@ -63,6 +63,7 @@ All generated button HTML uses `<table>` wrappers and fully inline CSS. This is 
 - **Light mode UI** — white/light-gray theme with blue (`#3b6ff5`) accent
 - **Copy Embed Code** — one-click copy for the embed HTML
 - **Publish to GitHub** — publishes the `.ics` file and auto-updates the Apple button URL
+- **Form persistence** — all field values are saved to `localStorage` automatically on every change and restored on page reload. A **Clear This Form** button wipes the saved state and resets everything to defaults.
 
 ---
 
@@ -91,3 +92,4 @@ All generated button HTML uses `<table>` wrappers and fully inline CSS. This is 
 - Recurring event support
 - Option to customize the "Add to your calendar:" label text
 - Export/save event presets for reuse
+- Confirmation prompt on "Clear This Form" to prevent accidental loss
