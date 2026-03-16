@@ -6,8 +6,8 @@ METHOD:PUBLISH
 BEGIN:VEVENT
 DTSTART;TZID=America/Los_Angeles:20260316T090000
 DTEND;TZID=America/Los_Angeles:20260316T100000
-DTSTAMP:20260316T153524Z
-UID:event-1773675324116@calendar-generator
+DTSTAMP:20260316T154334Z
+UID:event-1773675814215@calendar-generator
 SUMMARY:test event
 DESCRIPTION:a test event
 LOCATION:https://washington.zoom.us/my/brockcraft
