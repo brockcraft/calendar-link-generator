@@ -723,28 +723,29 @@ ${btns.join('\n')}
       return `<a href="${href}" ${tgt} ${dl} class="prev-btn" style="background:${p.bg}; color:${p.color}; border:${p.border};">${LABELS[key]}</a>`;
     }).join('');
 
-    const appleUpload = enabled.includes('apple') ? `
-      <div style="margin-top:12px; padding-top:12px; border-top:1px solid #e2e5ea; display:flex; align-items:center; gap:10px; flex-wrap:wrap;">
-        <span style="font-family:'DM Mono',monospace; font-size:9.5px; color:#7b829a; text-transform:uppercase; letter-spacing:0.1em;">Apple / iCal</span>
-        <button id="uploadBtn" class="dl-btn" onclick="uploadICS()">☁ Publish to GitHub</button>
-        <span id="upload-status" style="font-family:'DM Mono',monospace; font-size:11px;"></span>
-
-      </div>` : '';
-
     lastIcsContent = icsContent;
     lastSafeTitle  = safeTitle;
 
-    document.getElementById('output').innerHTML = `
+    const appleCard = enabled.includes('apple') ? `
       <div class="card">
         <div class="card-header"><span class="card-label">Step 1: Apple / iCal</span></div>
-        <p style="font-family:Arial,sans-serif; font-size:13px; color:#888; margin-bottom:10px;">Add to your calendar:</p>
-        <div class="preview-buttons">${previewBtns}</div>
-        ${appleUpload}
+        <div style="display:flex; align-items:center; gap:10px; flex-wrap:wrap;">
+          <button id="uploadBtn" class="dl-btn" onclick="uploadICS()">☁ Publish to GitHub</button>
+          <span id="upload-status" style="font-family:'DM Mono',monospace; font-size:11px;"></span>
+        </div>
+      </div>` : '';
+
+    document.getElementById('output').innerHTML = `
+      <div class="card">
+        <div class="card-header"><span class="card-label">Preview</span></div>
+        <p style="font-family:Arial,sans-serif; font-size:13px; color:#888; margin-bottom:10px; text-align:center;">Add to your calendar:</p>
+        <div class="preview-buttons" style="justify-content:center;">${previewBtns}</div>
       </div>
+      ${appleCard}
       <div class="card">
         <div class="card-header">
           <span class="card-label">Step 2: HTML Embed Code — paste into Mailchimp "Code" block</span>
-          <button class="copy-btn" onclick="cp(this,'embed-code')">Copy</button>
+          <button class="copy-btn" onclick="cp(this,'embed-code')">Copy Embed Code</button>
         </div>
         <pre id="embed-code">${esc(emailHTML)}</pre>
         <div class="hint">
@@ -776,11 +777,11 @@ ${btns.join('\n')}
       const json = await res.json();
       if (json.ok) {
         document.getElementById('icsUrl').value = json.url;
-        btn.textContent = '☁ Upload to Drive';
+        btn.textContent = '☁ Publish to GitHub';
         btn.disabled    = false;
         generate(); // rebuild output with the hosted URL now in the Apple button
         // Set status after generate() so the DOM rebuild doesn't wipe it
-        document.getElementById('upload-status').textContent = '✓ Uploaded';
+        document.getElementById('upload-status').textContent = '✓ Published';
         document.getElementById('upload-status').style.color = 'var(--success)';
       } else {
         throw new Error(json.error || 'Upload failed');
@@ -788,7 +789,7 @@ ${btns.join('\n')}
     } catch (err) {
       status.textContent = '✗ ' + err.message;
       status.style.color = '#dc2626';
-      btn.textContent    = '☁ Upload to Drive';
+      btn.textContent    = '☁ Publish to GitHub';
       btn.disabled       = false;
     }
   }
@@ -796,7 +797,7 @@ ${btns.join('\n')}
   function cp(btn, id) {
     navigator.clipboard.writeText(document.getElementById(id).textContent).then(() => {
       btn.textContent = 'Copied ✓'; btn.classList.add('ok');
-      setTimeout(() => { btn.textContent = 'Copy'; btn.classList.remove('ok'); }, 2500);
+      setTimeout(() => { btn.textContent = 'Copy Embed Code'; btn.classList.remove('ok'); }, 2500);
     });
   }
 </script>
